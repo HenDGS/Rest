@@ -1,22 +1,17 @@
 from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
-import base64
-import threading
-import time
 from datetime import datetime
 import pandas as pd
 
 app = Flask(__name__)
 api = Api(app)
-logged_on_clients = {}
+
 
 def check_csvs():
     try:
         pd.read_csv('csvs/clients.csv')
     except FileNotFoundError:
-        df = pd.DataFrame({'name': [],
-                           'public_key': [],
-                           'remote_object_reference': []})
+        df = pd.DataFrame({'name': [], })
         df.to_csv('csvs/clients.csv', index=False)
 
     try:
@@ -27,79 +22,123 @@ def check_csvs():
                            'description': [],
                            'quantity': [],
                            'price': [],
-                           'stock': [],
+                           'min_stock': [],
                            'date': [],
                            'hour': []})
         df.to_csv('csvs/products.csv', index=False)
 
     try:
-        pd.read_csv('csvs/stock.csv')
+        pd.read_csv('csvs/stock_control.csv')
     except FileNotFoundError:
         df = pd.DataFrame({'code': [],
                            'quantity': [],
                            'date': [],
                            'hour': []})
-        df.to_csv('csvs/stock.csv', index=False)
+        df.to_csv('csvs/stock_control.csv', index=False)
 
 
 check_csvs()
-stock = pd.read_csv('csvs/stock.csv')
-clients = pd.read_csv('csvs/clients.csv')
-products = pd.read_csv('csvs/products.csv')
 
 
-TODOS = {
-    'todo1': {'task': 'build an API'},
-    'todo2': {'task': '?????'},
-    'todo3': {'task': 'profit!'},
-}
+class Rest:
+    logged_on_clients = {}
+
+    name = 'henrique'
+    clients = pd.read_csv('csvs/clients.csv')
+    products = pd.read_csv('csvs/products.csv')
+    stock_control = pd.read_csv('csvs/stock_control.csv')
+
+    class TodoList(Resource):
+        def get(self):
+            print(Rest.name)
+            Rest.name = 'caio'
+            print(Rest.name)
+            return "Hello World!"
+
+    class RegisterClient(Resource):
+        def post(self):
+            parser = reqparse.RequestParser()
+            parser.add_argument('name', type=str, help='Your name', required=True)
+            args = parser.parse_args()
+
+            df = pd.DataFrame({'name': [args['name']]})
+            df.to_csv('csvs/clients.csv', mode='a', header=False, index=False)
+            print('Client registered successfully')
+
+            Rest.clients = pd.read_csv('csvs/clients.csv')
+
+            return 'Client registered successfully'
+
+    class RegisterProduct(Resource):
+        def post(self):
+            parser = reqparse.RequestParser()
+            parser.add_argument('code', type=str, help='Product code', required=True)
+            parser.add_argument('name', type=str, help='Product name', required=True)
+            parser.add_argument('description', type=str, help='Product description', required=True)
+            parser.add_argument('quantity', type=int, help='Product quantity', required=True)
+            parser.add_argument('price', type=int, help='Product price', required=True)
+            parser.add_argument('min_stock', type=int, help='Product min stock', required=True)
+            args = parser.parse_args()
+
+            if args['code'] in Rest.products['code'].values:
+                print('Product already registered')
+                return
+
+            df = pd.DataFrame({'code': [args['code']],
+                               'name': [args['name']],
+                               'description': [args['description']],
+                               'quantity': [args['quantity']],
+                               'price': [args['price']],
+                               'min_stock': [args['min_stock']],
+                               'date': [datetime.now().strftime("%d/%m/%Y")],
+                               'hour': [datetime.now().strftime("%H:%M:%S")]})
+
+            df.to_csv('csvs/products.csv', mode='a', header=False, index=False)
+            print('Product registered successfully')
+
+            Rest.products = pd.read_csv('csvs/products.csv')
+
+            return 'Product registered successfully'
+
+    class RemoveProduct(Resource):
+        def post(self):
+            parser = reqparse.RequestParser()
+            parser.add_argument('code', type=str, help='Product code', required=True)
+            parser.add_argument('quantity', type=int, help='Product quantity', required=True)
+            args = parser.parse_args()
+
+            if args['code'] in Rest.products['code'].values:
+                # check if quantity is valid
+                if args['quantity'] <= Rest.products.loc[Rest.products['code'] == args['code'], 'quantity'].values[0]:
+                    Rest.products.loc[Rest.products['code'] == args['code'], 'quantity'] -= args['quantity']
+                    Rest.products.to_csv('csvs/products.csv', index=False)
+                    print('Product removed successfully')
+
+                    # update stock.csv with movement (add or remove) and quantity of products
+                    self.update_stock_log(code, quantity * -1, datetime.now().strftime("%d/%m/%Y"),
+                                          datetime.now().strftime("%H:%M:%S"))
+                else:
+                    print('Invalid quantity')
+            else:
+                print('Product not found')
+
+    def UpdateStockLog(code, quantity, date, hour):
+        df = pd.DataFrame({'code': [code],
+                           'quantity': [quantity],
+                           'date': [date],
+                           'hour': [hour]})
+        df.to_csv('csvs/stock.csv', mode='a', header=False, index=False)
+
+        Rest.stock = pd.read_csv('csvs/stock.csv')
+
+        print('Stock log updated successfully')
 
 
+attributes = Rest.__dict__
 
-def abort_if_todo_doesnt_exist(todo_id):
-    if todo_id not in TODOS:
-        abort(404, message="Todo {} doesn't exist".format(todo_id))
-
-
-parser = reqparse.RequestParser()
-parser.add_argument('task')
-
-
-def Todo(Resource):
-    def post(self):
-        args = parser.parse_args()
-        todo_id = int(max(TODOS.keys()).lstrip('todo')) + 1
-
-        remote_object_reference2 = remote_object_reference
-        logged_on_clients[name] = remote_object_reference
-
-        remote_object_reference = str(remote_object_reference)
-
-        print(f'Client {name} registered successfully')
-
-        df = pd.DataFrame({'name': [name],
-                           'public_key': [public_key],
-                           'remote_object_reference': [remote_object_reference]})
-
-        df.to_csv('csvs/clients.csv', mode='a', header=False, index=False)
-        print('Client registered successfully')
-
-        clients = pd.read_csv('csvs/clients.csv')
-
-
-class TodoList(Resource):
-    def get(self):
-        return TODOS
-
-    def post(self):
-        args = parser.parse_args()
-        todo_id = int(max(TODOS.keys()).lstrip('todo')) + 1
-        todo_id = 'todo%i' % todo_id
-        TODOS[todo_id] = {'task': args['task']}
-        return TODOS[todo_id], 201
-
-
-api.add_resource(Todo, '/todos/<todo_id>')
+for attribute in attributes:
+    if isinstance(attributes[attribute], type):
+        api.add_resource(attributes[attribute], f'/{attribute}')
 
 if __name__ == '__main__':
     check_csvs()
