@@ -32,10 +32,10 @@ es.onmessage = function (event) {
     const fs = require('fs');
     fs.appendFile('data.txt', new_data + '\n', function (err) {
         if (err) throw err;
-        console.log('Saved!');
+        // console.log('Saved!');
     });
 }
 
-es.onerror = function (error) {
-    console.error(`EventSource failed: ${error}`);
-};
+// es.onerror = function (error) {
+//     console.error(`EventSource failed: ${error}`);
+// };

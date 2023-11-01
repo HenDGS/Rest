@@ -78,7 +78,7 @@ async function main() {
 
             fs.writeFile('data.txt', '', function (err) {
                 if (err) throw err;
-                console.log('File is cleaned!');
+                // console.log('File is cleaned!');
             });
 
         } else if (user_choice === '4') {

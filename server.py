@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
 from datetime import datetime
 import pandas as pd
+import subprocess
 
 app = Flask(__name__)
 api = Api(app)
@@ -39,6 +40,7 @@ def check_csvs():
 
 check_csvs()
 
+subprocess.Popen(['python', 'sse.py'], shell=True)
 
 class Rest:
     logged_on_clients = {}
@@ -138,7 +140,6 @@ class Rest:
 
     class GetProduct(Resource):
         def get(self):
-            # return products with quantity > 0 in a readable dataframe to json format
             return Rest.products.loc[Rest.products['quantity'] > 0].to_json()
 
     class GetProductsWithoutMovement(Resource):
@@ -151,7 +152,6 @@ class Rest:
             initial_date = datetime.strptime(args['initial_date'], '%d/%m/%Y')
             final_date = datetime.strptime(args['final_date'], '%d/%m/%Y')
 
-            # return products with quantity > 0
             return Rest.products.loc[Rest.products['quantity'] > 0].to_string(index=False)
 
 

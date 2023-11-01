@@ -19,7 +19,6 @@ RETRY_TIMEOUT = 15000  # milisecond
 async def message_stream(request: Request):
     async def event_generator():
         while True:
-            # If client closes connection, stop sending events
             if await request.is_disconnected():
                 break
 
