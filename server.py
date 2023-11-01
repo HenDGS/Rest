@@ -72,7 +72,7 @@ class Rest:
     class RegisterProduct(Resource):
         def post(self):
             parser = reqparse.RequestParser()
-            parser.add_argument('code', type=str, help='Product code', required=True)
+            parser.add_argument('code', type=int, help='Product code', required=True)
             parser.add_argument('name', type=str, help='Product name', required=True)
             parser.add_argument('description', type=str, help='Product description', required=True)
             parser.add_argument('quantity', type=int, help='Product quantity', required=True)
@@ -98,12 +98,15 @@ class Rest:
 
             Rest.products = pd.read_csv('csvs/products.csv')
 
+            Rest.UpdateStockLog(args['code'], args['quantity'], datetime.now().strftime("%d/%m/%Y"),
+                                datetime.now().strftime("%H:%M:%S"))
+
             return 'Product registered successfully'
 
     class RemoveProduct(Resource):
         def post(self):
             parser = reqparse.RequestParser()
-            parser.add_argument('code', type=str, help='Product code', required=True)
+            parser.add_argument('code', type=int, help='Product code', required=True)
             parser.add_argument('quantity', type=int, help='Product quantity', required=True)
             args = parser.parse_args()
 
@@ -115,8 +118,8 @@ class Rest:
                     print('Product removed successfully')
 
                     # update stock.csv with movement (add or remove) and quantity of products
-                    self.update_stock_log(code, quantity * -1, datetime.now().strftime("%d/%m/%Y"),
-                                          datetime.now().strftime("%H:%M:%S"))
+                    Rest.UpdateStockLog(args['code'], args['quantity'] * -1, datetime.now().strftime("%d/%m/%Y"),
+                                        datetime.now().strftime("%H:%M:%S"))
                 else:
                     print('Invalid quantity')
             else:
@@ -127,11 +130,29 @@ class Rest:
                            'quantity': [quantity],
                            'date': [date],
                            'hour': [hour]})
-        df.to_csv('csvs/stock.csv', mode='a', header=False, index=False)
+        df.to_csv('csvs/stock_control.csv', mode='a', header=False, index=False)
 
-        Rest.stock = pd.read_csv('csvs/stock.csv')
+        Rest.stock_control = pd.read_csv('csvs/stock_control.csv')
 
         print('Stock log updated successfully')
+
+    class GetProduct(Resource):
+        def get(self):
+            # return products with quantity > 0 in a readable dataframe to json format
+            return Rest.products.loc[Rest.products['quantity'] > 0].to_json()
+
+    class GetProductsWithoutMovement(Resource):
+        def get(self):
+            parser = reqparse.RequestParser()
+            parser.add_argument('initial_date', type=str, help='Initial date', required=True)
+            parser.add_argument('final_date', type=str, help='Final date', required=True)
+            args = parser.parse_args()
+
+            initial_date = datetime.strptime(args['initial_date'], '%d/%m/%Y')
+            final_date = datetime.strptime(args['final_date'], '%d/%m/%Y')
+
+            # return products with quantity > 0
+            return Rest.products.loc[Rest.products['quantity'] > 0].to_string(index=False)
 
 
 attributes = Rest.__dict__
