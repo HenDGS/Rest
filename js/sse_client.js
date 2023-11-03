@@ -21,19 +21,34 @@
 // };
 
 const EventSource = require('eventsource');
+const fs = require("fs");
 
 const es = new EventSource('http://127.0.0.1:8001/stream');
 
 // let buffer = [];
 
 es.onmessage = function (event) {
-    let new_data  = new Date().toString() + ' Message: ' + event.data;
+    // let new_data  = new Date().toString() + ' Message: ' + event.data;
+    // fs.appendFile('data.txt', new_data + '\n', function (err) {
+    //     if (err) throw err;
+    //     // console.log('Saved!');
+    // });
 
-    const fs = require('fs');
-    fs.appendFile('data.txt', new_data + '\n', function (err) {
-        if (err) throw err;
-        // console.log('Saved!');
-    });
+    if (event.data.startsWith('Products that haven\'t been sold in the last 3 days')) {
+        let new_data  = new Date().toString() + ' Message: ' + event.data;
+        fs.appendFile('data2.txt', new_data + '\n', function (err) {
+            if (err) throw err;
+            // console.log('Saved!');
+        });
+    }
+
+    else {
+        let new_data  = new Date().toString() + ' Message: ' + event.data;
+        fs.appendFile('data.txt', new_data + '\n', function (err) {
+            if (err) throw err;
+            // console.log('Saved!');
+        });
+    }
 }
 
 // es.onerror = function (error) {

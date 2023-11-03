@@ -1,0 +1,6 @@
+Fri Nov 03 2023 18:46:35 GMT-0300 (Horário Padrão de Brasília) Message: Products that haven't been sold in the last 3 days code       name      description  quantity  price  stock       date     hour
+    2     kitkat chocolate nestle         7      5      5 28/10/2023 13:42:47
+    3     kitkat chocolate nestle         7      5      5 28/10/2023 13:50:42
+    4     kitkat chocolate nestle         7      5      5 28/10/2023 13:53:10
+    5     kitkat chocolate nestle         7      5      5 28/10/2023 13:53:55
+  310 caneta bic material escolar        30      2     20 03/11/2023 18:44:10

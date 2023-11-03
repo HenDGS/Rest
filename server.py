@@ -42,6 +42,7 @@ check_csvs()
 
 subprocess.Popen(['python', 'sse.py'], shell=True)
 
+
 class Rest:
     logged_on_clients = {}
 
@@ -142,17 +143,40 @@ class Rest:
         def get(self):
             return Rest.products.loc[Rest.products['quantity'] > 0].to_json()
 
-    class GetProductsWithoutMovement(Resource):
-        def get(self):
+    class GetStockLog(Resource):
+        def post(self):
             parser = reqparse.RequestParser()
             parser.add_argument('initial_date', type=str, help='Initial date', required=True)
             parser.add_argument('final_date', type=str, help='Final date', required=True)
             args = parser.parse_args()
 
+            Rest.stock_control['date'] = pd.to_datetime(Rest.stock_control['date'], format="%d/%m/%Y")
+
             initial_date = datetime.strptime(args['initial_date'], '%d/%m/%Y')
             final_date = datetime.strptime(args['final_date'], '%d/%m/%Y')
 
-            return Rest.products.loc[Rest.products['quantity'] > 0].to_string(index=False)
+            return Rest.stock_control.loc[(Rest.stock_control['date'] >= initial_date) &
+                                          (Rest.stock_control['date'] <= final_date)].to_string(index=False)
+
+    class GetProductsWithoutMovement(Resource):
+        def post(self):
+            parser = reqparse.RequestParser()
+            parser.add_argument('initial_date', type=str, help='Initial date', required=True)
+            parser.add_argument('final_date', type=str, help='Final date', required=True)
+            args = parser.parse_args()
+
+            Rest.stock_control['date'] = pd.to_datetime(Rest.stock_control['date'], format="%d/%m/%Y")
+
+            initial_date = datetime.strptime(args['initial_date'], '%d/%m/%Y')
+            final_date = datetime.strptime(args['final_date'], '%d/%m/%Y')
+
+            # products_withouth_movement = self.products.loc[~self.products['code'].isin(
+            #             self.stock.loc[(self.stock['date'] >= initial_date) & (self.stock['date'] <= final_date)]['code'])]
+            products_withouth_movement = Rest.products.loc[~Rest.products['code'].isin(
+                Rest.stock_control.loc[(Rest.stock_control['date'] >= initial_date) &
+                                       (Rest.stock_control['date'] <= final_date)]['code'])]
+
+            return products_withouth_movement.to_string(index=False)
 
 
 attributes = Rest.__dict__
