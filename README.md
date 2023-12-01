@@ -84,6 +84,8 @@ node client.js
 
 Now select the options in the client menu.
 
+![img.png](..%2F..%2F..%2FDownloads%2Fimg.png)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
