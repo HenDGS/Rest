@@ -1,10 +1,10 @@
-import asyncio
 import time
+from datetime import datetime
+
 import pandas as pd
 import uvicorn
 from fastapi import FastAPI, Request
 from sse_starlette.sse import EventSourceResponse
-from datetime import datetime
 
 app = FastAPI()
 
@@ -38,8 +38,8 @@ async def root():
     return {"message": "Hello World"}
 
 
-STREAM_DELAY = 10  # second
-RETRY_TIMEOUT = 15000  # milisecond
+STREAM_DELAY = 20  # second
+RETRY_TIMEOUT = 15000  # millisecond
 
 
 @app.get('/stream')

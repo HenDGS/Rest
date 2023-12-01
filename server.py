@@ -1,8 +1,9 @@
-from flask import Flask
-from flask_restful import reqparse, abort, Api, Resource
-from datetime import datetime
-import pandas as pd
 import subprocess
+from datetime import datetime
+
+import pandas as pd
+from flask import Flask
+from flask_restful import reqparse, Api, Resource
 
 app = Flask(__name__)
 api = Api(app)
@@ -170,13 +171,13 @@ class Rest:
             initial_date = datetime.strptime(args['initial_date'], '%d/%m/%Y')
             final_date = datetime.strptime(args['final_date'], '%d/%m/%Y')
 
-            # products_withouth_movement = self.products.loc[~self.products['code'].isin(
-            #             self.stock.loc[(self.stock['date'] >= initial_date) & (self.stock['date'] <= final_date)]['code'])]
-            products_withouth_movement = Rest.products.loc[~Rest.products['code'].isin(
+            # products_without_movement = self.products.loc[~self.products['code'].isin( self.stock.loc[(self.stock[
+            # 'date'] >= initial_date) & (self.stock['date'] <= final_date)]['code'])]
+            products_without_movement = Rest.products.loc[~Rest.products['code'].isin(
                 Rest.stock_control.loc[(Rest.stock_control['date'] >= initial_date) &
                                        (Rest.stock_control['date'] <= final_date)]['code'])]
 
-            return products_withouth_movement.to_string(index=False)
+            return products_without_movement.to_string(index=False)
 
 
 attributes = Rest.__dict__

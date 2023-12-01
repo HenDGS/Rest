@@ -1,10 +1,3 @@
-async function getData() {
-    const response = await fetch('http://127.0.0.1:5000/TodoList');
-    const data = await response.json();
-    console.log(data);
-    return data;
-}
-
 async function postData() {
     const prompt = require('prompt-sync')();
     let user_name = prompt('What is your name? ');
@@ -159,45 +152,42 @@ async function main() {
     while (true) {
         console.log('What do you want to do?');
         console.log('1. Register');
-        console.log('2. Get Data');
-        console.log('3. Register Product');
-        console.log('4. Remove Product');
-        console.log('5. Get Products');
-        console.log('6. Get Stock Log');
-        console.log('7. Get Products Without Movement');
-        console.log('8. Get Notifications About Products That Have Not Been Sold In The Last 3 Days');
-        console.log('9. Get Notifications About Products That Need To Be Replenished');
-        console.log('10. Exit');
+        console.log('2. Register Product');
+        console.log('3. Remove Product');
+        console.log('4. Get Products');
+        console.log('5. Get Stock Log');
+        console.log('6. Get Products Without Movement');
+        console.log('7. Get Notifications About Products That Have Not Been Sold In The Last 3 Days');
+        console.log('8. Get Notifications About Products That Need To Be Replenished');
+        console.log('9. Exit');
         let user_choice = prompt();
 
         if (user_choice === '1') {
             await postData();
 
-        } else if (user_choice === '2') {
-            await getData();
         }
 
-        else if (user_choice === '3') {
+        else if (user_choice === '2') {
             await postProduct();
         }
 
-        else if (user_choice === '4') {
+        else if (user_choice === '3') {
             await removeProduct();
         }
 
-        else if (user_choice === '5') {
+        else if (user_choice === '4') {
             await getProducts();
         }
 
-        else if (user_choice === '6') {
+        else if (user_choice === '5') {
             await getstocklog();
         }
 
-        else if (user_choice === '7') {
+        else if (user_choice === '6') {
             await getproductswithoutmovement();
         }
 
-        else if (user_choice === '8') {
+        else if (user_choice === '7') {
             const fs = require('fs');
             try {
                 const data = fs.readFileSync('data2.txt', 'utf8');
@@ -213,7 +203,7 @@ async function main() {
 
         }
 
-        else if (user_choice === '9') {
+        else if (user_choice === '8') {
             const fs = require('fs');
             try {
                 const data = fs.readFileSync('data.txt', 'utf8');
@@ -229,7 +219,7 @@ async function main() {
 
         }
 
-        else if (user_choice === '10') {
+        else if (user_choice === '9') {
             worker.terminate()
 
             break;
