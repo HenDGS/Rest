@@ -84,7 +84,7 @@ node client.js
 
 Now select the options in the client menu.
 
-![img.png](..%2F..%2F..%2FDownloads%2Fimg.png)
+![Menu](https://i.imgur.com/7QgULRA.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
