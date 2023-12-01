@@ -1,6 +1,5 @@
 import subprocess
 from datetime import datetime
-
 import pandas as pd
 from flask import Flask
 from flask_restful import reqparse, Api, Resource

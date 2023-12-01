@@ -18,7 +18,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Project to reimplement the [Pyro] middleware project in the REST architecture.
+Project to reimplement the [Pyro] middleware project in the REST architecture. Uses FastAPI for SSE and Flask for the REST API. 
 
 Development of a product inventory management system. Use Rest to provide communication between processes.
 Methods available in the stock management system:
