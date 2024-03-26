@@ -1,5 +1,5 @@
 asyncio==3.4.3
 uvicorn==0.23.2
 pandas==2.1.2
-fastapi==0.104.1
+fastapi==0.109.1
 Flask==3.0.0
